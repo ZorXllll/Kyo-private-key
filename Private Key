@@ -912,3 +912,352 @@ button.MouseButton1Click:Connect(function()
         isProcessing = false
     end
 end)
+
+
+
+
+
+
+
+
+
+
+
+Hacker key system
+
+
+
+
+
+
+
+
+
+
+
+
+local KeySystem = {}
+KeySystem.__index = KeySystem
+
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local isVerifying = false
+
+local function ValidateKey(inputKey, validKeys)
+    for _, validKey in pairs(validKeys) do
+        if inputKey == validKey then
+            return true
+        end
+    end
+    return false
+end
+
+local function Create(className, properties, parent)
+    local instance = Instance.new(className)
+    for property, value in pairs(properties) do
+        instance[property] = value
+    end
+    if parent then
+        instance.Parent = parent
+    end
+    return instance
+end
+
+function KeySystem:CreateKeySystem(Config)
+    local Title = "ZorX-Private"
+    local Description = Config.Description or "Enter Your Key"
+    local Keys = Config.Keys or {}
+    
+    local MainScriptCallback = Config.MainScriptCallback or function(success)
+        if success then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ZorXllll/Muscle-Legends-llll/refs/heads/main/ZorX-Private"))()
+        end
+    end
+
+    local DarkColor = Color3.fromRGB(15, 15, 15)
+    local DarkerColor = Color3.fromRGB(5, 5, 5)
+    local AccentColor = Color3.fromRGB(255, 255, 255)
+    local PureBlack = Color3.fromRGB(0, 0, 0)
+
+    local KeySystemGui = Create("ScreenGui", {
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        IgnoreGuiInset = true,
+        Name = "KeySystemGui"
+    }, RunService:IsStudio() and Player.PlayerGui or 
+       (gethui and gethui() or game:GetService("CoreGui")))
+
+    local BlurBackground = Create("Frame", {
+        BackgroundColor3 = PureBlack,
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
+        Name = "BlurBackground"
+    }, KeySystemGui)
+
+    -- Floating Bubbles Container
+    local BubblesHolder = Create("Frame", {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        Name = "BubblesHolder"
+    }, BlurBackground)
+
+    -- Generate floating bubble particles
+    task.spawn(function()
+        math.randomseed(tick())
+        while KeySystemGui.Parent do
+            task.wait(0.8)
+            if not KeySystemGui.Parent then break end
+            
+            local size = math.random(9, 25)
+            local posX = math.random(5, 95) / 100
+            
+            local bubble = Create("Frame", {
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundTransparency = math.random(60, 85) / 100,
+                BorderSizePixel = 0,
+                Position = UDim2.new(posX, 0, 1.1, 0),
+                Size = UDim2.new(0, size, 0, size),
+                Name = "Bubble"
+            }, BubblesHolder)
+
+            Create("UICorner", {CornerRadius = UDim.new(1, 0)}, bubble)
+
+            local speed = math.random(4, 8)
+            local targetX = posX + (math.random(-10, 10) / 100)
+            
+            local tween = TweenService:Create(bubble, TweenInfo.new(speed, Enum.EasingStyle.Linear), {
+                Position = UDim2.new(targetX, 0, -0.1, 0),
+                BackgroundTransparency = 1
+            })
+            
+            tween:Play()
+            tween.Completed:Connect(function()
+                bubble:Destroy()
+            end)
+        end
+    end)
+
+    -- Glowing Background Aura Effect
+    local GlowEffect = Create("Frame", {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.85,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 460, 0, 410),
+        Name = "GlowEffect"
+    }, BlurBackground)
+
+    Create("UICorner", {CornerRadius = UDim.new(0, 26)}, GlowEffect)
+
+    local glowTween = TweenService:Create(GlowEffect, TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+        BackgroundTransparency = 0.95,
+        Size = UDim2.new(0, 490, 0, 440)
+    })
+    glowTween:Play()
+
+    -- Katamtamang Laki ng KeyContainer Box (440 width x 380 height)
+    local KeyContainer = Create("Frame", {
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = PureBlack,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0.5, 0, 0.5, 0),
+        Size = UDim2.new(0, 440, 0, 380),
+        Name = "KeyContainer"
+    }, BlurBackground)
+
+    Create("UICorner", {CornerRadius = UDim.new(0, 22)}, KeyContainer)
+
+    Create("UIStroke", {
+        Color = AccentColor,
+        Thickness = 2,
+        Transparency = 0.5,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    }, KeyContainer)
+
+    local CloseButton = Create("TextButton", {
+        Font = Enum.Font.GothamBold,
+        Text = "X",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        TextSize = 18,
+        BackgroundColor3 = DarkColor,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(1, -40, 0, 10),
+        Size = UDim2.new(0, 30, 0, 30),
+        Name = "CloseButton"
+    }, KeyContainer)
+
+    Create("UICorner", {CornerRadius = UDim.new(0, 8)}, CloseButton)
+
+    Create("TextLabel", {
+        Font = Enum.Font.GothamBold,
+        Text = Title,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 30,
+        BackgroundTransparency = 1,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0.5, 0, 0, 44),
+        Size = UDim2.new(0, 360, 0, 45),
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Name = "TitleLabel"
+    }, KeyContainer)
+
+    Create("TextLabel", {
+        Font = Enum.Font.Gotham,
+        Text = Description,
+        TextColor3 = Color3.fromRGB(180, 180, 180),
+        TextSize = 15,
+        TextWrapped = true,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 25, 0, 82),
+        Size = UDim2.new(1, -50, 0, 38),
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Name = "DescLabel"
+    }, KeyContainer)
+
+    local InputFrame = Create("Frame", {
+        BackgroundColor3 = DarkColor,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 25, 0, 132), 
+        Size = UDim2.new(1, -50, 0, 48),
+        Name = "InputFrame"
+    }, KeyContainer) 
+
+    Create("UICorner", {CornerRadius = UDim.new(0, 12)}, InputFrame)
+
+    Create("UIStroke", {
+        Color = AccentColor,
+        Thickness = 1.5,
+        Transparency = 0.7
+    }, InputFrame)
+
+    local KeyInput = Create("TextBox", {
+        Font = Enum.Font.Gotham,
+        PlaceholderText = "Enter Access Key",
+        PlaceholderColor3 = Color3.fromRGB(100, 100, 100),
+        Text = "",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 15,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 15, 0, 0),
+        Size = UDim2.new(1, -30, 1, 0),
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ClearTextOnFocus = false,
+        Name = "KeyInput"
+    }, InputFrame)
+
+    local ButtonsFrame = Create("Frame", {
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 25, 0, 196),
+        Size = UDim2.new(1, -50, 0, 95),
+        Name = "ButtonsFrame"
+    }, KeyContainer)
+
+    local function createEnhancedButton(properties, parent)
+        local button = Create("TextButton", properties, parent)
+        Create("UICorner", {CornerRadius = UDim.new(0, 10)}, button)
+        return button
+    end
+
+    local GetKeyButton = createEnhancedButton({
+        Font = Enum.Font.GothamBold,
+        Text = "Get Key",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 16,
+        BackgroundColor3 = DarkColor,
+        BackgroundTransparency = 0.05,
+        BorderSizePixel = 0,
+        Size = UDim2.new(1, 0, 0, 40),
+        Name = "GetKeyButton"
+    }, ButtonsFrame)
+
+    GetKeyButton.Activated:Connect(function()
+        local discordLink = "ULOL"
+        if setclipboard then
+            setclipboard(discordLink)
+        end
+    end)
+
+    local MainScript = createEnhancedButton({
+        Font = Enum.Font.GothamBold,
+        Text = "Enter Access Key",
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        TextSize = 16,
+        BackgroundColor3 = DarkerColor,
+        BackgroundTransparency = 0.05,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 0, 0, 48),
+        Size = UDim2.new(1, 0, 0, 40),
+        Name = "MainScript"
+    }, ButtonsFrame)
+
+    local StatusLabel = Create("TextLabel", {
+        Font = Enum.Font.GothamBold,
+        Text = "",
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        TextSize = 14,
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 25, 0, 312),
+        Size = UDim2.new(1, -50, 0, 25),
+        TextXAlignment = Enum.TextXAlignment.Center,
+        Visible = false,
+        Name = "StatusLabel"
+    }, KeyContainer)
+
+    local function verifyKey()
+        if isVerifying then return end
+        isVerifying = true
+
+        local inputKey = KeyInput.Text
+
+        if inputKey == "" then
+            StatusLabel.Text = "Please enter a key."
+            StatusLabel.Visible = true
+            task.wait(1.5)
+            StatusLabel.Visible = false
+            isVerifying = false
+            return
+        end
+
+        if ValidateKey(inputKey, Keys) then
+            StatusLabel.Text = "Valid Key!"
+            StatusLabel.Visible = true
+
+            task.wait(1)
+            KeySystemGui:Destroy()
+            MainScriptCallback(true)
+        else
+            StatusLabel.Text = "Invalid Key."
+            StatusLabel.Visible = true
+            task.wait(1.5)
+            StatusLabel.Visible = false
+            isVerifying = false
+        end
+    end
+
+    MainScript.Activated:Connect(verifyKey)
+    KeyInput.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            verifyKey()
+        end
+    end)
+
+    CloseButton.Activated:Connect(function()
+        KeySystemGui:Destroy()
+    end)
+
+    return KeySystem
+end
+
+KeySystem:CreateKeySystem({
+    Description = "Enter Your Key",
+    Keys = {"zorx123"}
+})
